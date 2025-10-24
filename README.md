@@ -4,8 +4,8 @@
 
 Установка инструментов
 ```shell
-sudo apt update
-sudo apt install nasm, make, gcc
+
+sudo apt update && sudo apt install nasm make gcc
 ```
 
 Клонирование репозитория
