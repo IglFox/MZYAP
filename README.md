@@ -18,26 +18,26 @@ short int.
 
 
 - Установка инструментов
-        ```shell
-        sudo apt update && sudo apt install -y nasm make gcc git
-        ```
+```shell
+sudo apt update && sudo apt install -y nasm make gcc git
+```
 
 - Клонирование репозитория
-        ```shell
-        git clone https://github.com/IglFox/MZYAP
-        ```
+```shell
+git clone https://github.com/IglFox/MZYAP
+```
 
 - Запуск (в корне репозитория)
-        ```shell
-        cd LabWork_1 && make && ./lr1.exe
-        ```
+```shell
+cd LabWork_1 && make && ./lr1.exe
+```
 
 ---
 
 - Очистка 
-        ```shell
-        make clean
-        ```
+```shell
+make clean
+```
 
 ## ⤵️ ЛАБОРАТОРНАЯ РАБОТА №2 - "ОРГАНИЗАЦИЯ УСЛОВНЫХ ПЕРЕХОДОВ."
 
@@ -59,25 +59,25 @@ short int.
 ```
 
 - Установка инструментов
-        ```shell
-        sudo apt update && sudo apt install -y nasm make gcc git
-        ```
+```shell
+sudo apt update && sudo apt install -y nasm make gcc git
+```
 
 - Клонирование репозитория
-        ```shell
-        git clone https://github.com/IglFox/MZYAP
-        ```
+```shell
+git clone https://github.com/IglFox/MZYAP
+```
 
 - Запуск (в корне репозитория)
-        ```shell
-        cd LabWork_2 && make && ./lr2.exe
-        ```
+```shell
+cd LabWork_2 && make && ./lr2.exe
+```
 ---
 
 - Очистка 
-        ```shell
-        make clean
-        ```
+```shell
+make clean
+```
 
 
 
