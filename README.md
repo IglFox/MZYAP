@@ -15,7 +15,7 @@ git clone https://github.com/IglFox/MZYAP
 
 Запуск(в корне репозитория)
 ```shell
-cd lr1 && make && ./lr1.exe
+cd LabWork_1 && make && ./lr1.exe
 ```
 
 ---
