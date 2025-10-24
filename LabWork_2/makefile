@@ -10,5 +10,5 @@ asm16unsignbit.o: asm16unsignbit.asm
 	nasm -f elf64 -F dwarf -g asm16unsignbit.asm
 
 clean:
-	rm *.exe
-	rm *.o
+	find . -name "*.exe" -delete
+	find . -name "*.o" -delete

@@ -10,8 +10,8 @@ asm16bit.o: asm16bit.asm
 	nasm -f elf64 -F dwarf -g asm16bit.asm
 
 clean:
-	rm *.exe
-	rm *.o
+	find . -name "*.exe" -delete
+	find . -name "*.o" -delete
 
 
 
