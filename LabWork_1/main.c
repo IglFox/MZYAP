@@ -43,9 +43,16 @@ void c_calculate_16bit(uint16_t a, uint16_t b, uint16_t c) {
     printf("Result is %lld\n\n", res);
 }
 
+void print_formula() {
+    printf("╭─────────────────────────────────╮\n");
+    printf("│        (b x 7 + 64 ÷ a)         │\n");
+    printf("│      ────────────────────       │\n");
+    printf("│        (31 - c x b ÷ 2)         │\n");
+    printf("╰─────────────────────────────────╯\n");
+}
 
 int main() {
-    printf("\n\n(b*7+64/a)/(31-c*b/2)\n\n");
+    print_formula();
 
     printf("Enter the values for 8-bit (signed char from -128 to 127):\n");
     printf("a = ");
