@@ -1,0 +1,23 @@
+; a, b, c             8bit | a2, b2, c2          16bit |
+; num1, num2, res1   16bit | num3, num4, res2    64bit |
+
+; (b*7+64/a)/(31-c*b/2)
+
+; 1. b*7
+; 2. 64/a
+; 3. (1) + (2)
+; (3) >> num13
+
+; 4. c*b
+; 5. (4)/2
+; 6. 31 - (5)
+; (6) >> num24
+
+; 7. num13 / num24
+; (7) >> res12
+
+
+
+; IDIV x - AX=AX//x
+; IMUL x, y - x=x*y
+
