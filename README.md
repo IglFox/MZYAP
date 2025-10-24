@@ -1,0 +1,26 @@
+# Лабораторные работы по Машинно-зависимым языкам программирования
+
+## Лабораторная работа №1
+
+Установка инструментов
+```shell
+sudo apt update
+sudo apt install nasm, make, gcc
+```
+
+Клонирование репозитория
+```shell
+git clone https://github.com/IglFox/MZYAP
+```
+
+Запуск(в корне репозитория)
+```shell
+cd lr1 && make && ./lr1.exe
+```
+
+---
+
+Очистка 
+```shell
+cd lr1 && make clean
+```
