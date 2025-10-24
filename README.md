@@ -22,5 +22,5 @@ cd LabWork_1 && make && ./lr1.exe
 
 Очистка 
 ```shell
-cd LabWork_1 && make clean
+make clean
 ```
