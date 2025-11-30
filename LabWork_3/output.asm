@@ -1,99 +1,169 @@
 section .bss
-	print_buf_unsign resb 7		; знак + 5 цифр + нуль
-	print_buf_sign resb 7	    ; знак + 5 цифр + нуль
+    print_buf_unsign resb 7    ; буфер для беззнакового числа (6 цифр + 0)
+    print_buf_sign resb 7      ; буфер для знакового числа (знак + 5 цифр + 0)
 
 section .data
-    global print_str, print_signed, print_unsigned
-
+    global print_string, print_signed, print_unsigned
+    newline db 10, 0
 
 section .text
+;========================================
+; Вывод строки
+; Вход: ESI - указатель на строку
+print_string:
+    push eax
+    push ebx
+    push ecx
+    push edx
+    push esi
 
+    xor edx, edx               ; обнуляем счетчик длины
 
-; Выводит строку, которая в esi
-print_str:
-	push eax
-	push ebx
-	push ecx
-	push edx
-	push esi
+.loop_start:
+    cmp byte [esi + edx], 0    ; проверяем конец строки
+    je .loop_end               ; если одинаково, то в end
+    inc edx					   ; увеличисть edx на 1
+    jmp .loop_start            ; переход в start
 
-    .loop_start:
-        cmp byte [esi + edx], 0   ; выход при '\0'
-        je .loop_end
-        inc edx
-        jmp .loop_start
+.loop_end:
+    mov eax, 4                 ; системный вызов write
+    mov ebx, 1                 ; стандартный вывод
+    mov ecx, esi               ; строка для вывода
+    int 0x80                  
 
+    pop esi
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
+    ret
 
-    .loop_end:
-        mov eax, 4      ; sys_write
-        mov ebx, 1      ; stdout
-        mov ecx, esi    ; стррока для вывода
-        ; в edx сохранена длина
-        int 0x80        ; Вызов системы syscall
-
-	pop esi
-	pop edx
-	pop ecx
-	pop ebx
-	pop eax
-	ret
-
-
+;===============================
+; Вывод знакового числа
+; Вход: AX - число для вывода
 print_signed:
 	push esi
-	push ecx
-	push edx
+	push edi
 	push ebx
-	push eax
+	push ecx
+	push edx                
+    
+    mov cx, ax              ; Сохраняем число
+    mov edi, print_buf_sign ; Буфер для вывода
+    mov byte [edi], 0       ; Начальный нуль-терминатор
+    
+    ; Проверяем знак
+    cmp cx, 0
+    jge .positive
+    mov byte [edi], '-'     ; Записываем минус
+    inc edi
+    neg cx                  ; Делаем положительным
+    jmp .convert
 
-	; 0 в конец
-	mov esi, print_buf_sign + 6	
-	mov byte [esi], 0
+.positive:
+    mov byte [edi], '+'     ; Записываем плюс
+    inc edi
 
-	test ax, ax
-	jns .if_positive		; Если флаг знака не установлен, то переход
+.convert:
+    ; Находим конец буфера для цифр
+    mov esi, edi
+    add esi, 6              ; Максимум 6 цифр
+    
+.digit_loop:
+    dec esi                 ; Двигаемся назад
+    
+    mov ax, cx
+    xor dx, dx
+    mov bx, 10
+    div bx                  ; AX = частное, DX = цифра
+    
+    add dl, '0'             ; Преобразуем в символ
+    mov [esi], dl           ; Сохраняем
+    
+    mov cx, ax              ; Обновляем число
+    cmp cx, 0
+    jnz .digit_loop         ; Продолжаем если есть цифры
+    
+    ; Копируем цифры в основной буфер
+.copy_digits:
+    mov al, [esi]
+    mov [edi], al
+    inc esi
+    inc edi
+    cmp al, 0               ; До нуль-терминатора
+    jne .copy_digits
+    
+    ; Вывод результата
+    mov eax, 4              ; write
+    mov ebx, 1				; stdout
+    mov ecx, print_buf_sign ; то, куда
+    mov edx, edi			; длина
+    sub edx, print_buf_sign 
+    dec edx                 ; Минус лишний нуль-терминатор
+    int 0x80
+    
+    ; Перевод строки
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, newline
+    mov edx, 1
+    int 0x80
+    
+	pop esi
+    pop edx
+    pop ecx
+    pop ebx
+    pop eax
+    ret
 
-	; Отрицательное число - обрабатываем знак
-	neg ax			; Преобразуем в положительное число
-	mov byte [print_buf_sign], '-'
-	jmp .if_negative
+;=================================
+; Вывод беззнакового числа
+; Вход: AX - число для вывода
+print_unsigned:
+    push esi
+    push ecx
+    push edx
+    push ebx
+    push eax
 
-	.if_positive:
-		mov byte [print_buf_sign], ' '
+    ; Инициализация буфера
+    mov esi, print_buf_unsign + 6  
+    mov byte [esi], 0          ; нуль-терминатор в конец
 
-	.if_negative:
-		mov cx, ax
-		mov ebx, 10
+    mov cx, ax                 ; копируем число для обработки
+    mov ebx, 10                ; основание системы счисления
 
 .digit_loop:
-	dec esi			; двигаемся назад по буферу
-	mov ax, cx
-	xor dx, dx
-	div bx			; AX = частное, DX = остаток (0-9)
+    dec esi                    ; двигаемся назад по буферу
+    mov ax, cx
+    xor dx, dx
+    div bx                     ; DX = остаток (цифра), AX = частное
 
-	; Преобразуем остаток в символ
-	add dl, '0'		; DL = цифра -> символ
-	mov [esi], dl		; Сохраняем символ в буфер
+    add dl, '0'                ; преобразуем цифру в символ
+    mov [esi], dl              ; сохраняем символ в буфер
 
-	mov cx, ax		; CX - частное
-	test cx, cx		; Проверяем, осталось ли число
-	jnz .digit_loop		; Если не 0, то переход
+    mov cx, ax                 ; обновляем частное
+    cmp cx, 0             	   ; проверяем конец числа
+    jnz .digit_loop            ; продолжаем если есть еще цифры
 
+    ; Вывод числа
+    mov eax, 4                      ; системный вызов write
+    mov ebx, 1                      ; stdout
+    mov ecx, esi                    ; начало цифр в буфере
+    mov edx, print_buf_unsign + 6	; длина
+    sub edx, esi                    ; вычисляем длину числа
+    int 0x80                  
 
+    ; Вывод перевода строки
+    mov eax, 4                 ; системный вызов write
+    mov ebx, 1                 ; стандартный вывод
+    mov ecx, newline           ; символ новой строки
+    mov edx, 1                 ; длина 1 символ
+    int 0x80
 
-	mov eax, 4		; sys_write
-	mov ebx, 1		; stdout
-	; Вычисляем длину всей строки (знак + цифры)
-	mov ecx, output_buffer		; ECX = начало буфера (знак)
-	mov edx, output_buffer + 6	; EDX = конец буфера
-	sub edx, esi			; EDX = длина цифровой части
-	inc edx				; EDX = общая длина (знак + цифры)
-
-	int 0x80
-
-	pop eax                     ; Восстанавливаем исходное число
-	pop ebx
-	pop edx
-	pop ecx
-	pop esi
-	ret
+    pop eax
+    pop ebx
+    pop edx
+    pop ecx
+    pop esi
+    ret
