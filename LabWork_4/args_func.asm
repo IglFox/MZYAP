@@ -6,22 +6,18 @@ section .text
     extern print_string
 
 check_arguments:
-    pop eax        ; адрес возврата в основную программу
-    pop ebx        ; количество аргументов командной строки
-    pop ebx        ; имя программы, например "./program"
-    pop ebx        ; первый аргумент, например "input.txt"
-    
-    test ebx, ebx ; проверяем пусто ли 
-    jnz .success  ; (not zero)если нет - успех
-    
-    ; Ошибка
-    push eax       ; возвращаем return address
-    mov esi, msg_usage
-    call print_string
-    stc
-    ret
+	mov ecx, [esp + 4] ; кол-во аргументов
+	mov eax, [esp + 8] ; команда запуска
 
-.success:
-    push eax       ; возвращаем return address
-    clc
-    ret
+	cmp ecx, 2
+	jl .error		; если argc < 2
+
+	mov ebx, [esp + 12] ; имя файла 1 арг
+	clc
+	ret
+
+.error:
+	mov esi, msg_usage
+	call print_string
+	stc
+	ret
