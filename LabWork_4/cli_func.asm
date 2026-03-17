@@ -62,7 +62,7 @@ input_signed:
         sub bl, '0'
 
 	mov eax, edx        ; копируем текущее число в EAX
-	mov edx, 10         
+	mov edx, 10
 	imul edx            ; умножаем EAX на 10
 	jo .error           ; если было переполнение
 
@@ -145,7 +145,7 @@ print_string:
     mov eax, 4                 ; системный вызов write
     mov ebx, 1                 ; стандартный вывод
     mov ecx, esi               ; строка для вывода
-    int 0x80                  
+    int 0x80
 
     pop esi
     pop edx
@@ -162,12 +162,12 @@ print_signed:
 	push edi
 	push ebx
 	push ecx
-	push edx                
-    
+	push edx
+
     mov cx, ax              ; Сохраняем число
     mov edi, print_buf_sign ; Буфер для вывода
     mov byte [edi], 0       ; Начальный нуль-терминатор
-    
+
     ; Проверяем знак
     cmp cx, 0
     jge .positive
@@ -176,29 +176,29 @@ print_signed:
     neg cx                  ; Делаем положительным
     jmp .convert
 
-.positive:    
+.positive:
     inc edi
 
 .convert:
     ; Находим конец буфера для цифр
     mov esi, edi
     add esi, 6              ; Максимум 6 цифр
-    
+
 .digit_loop:
     dec esi                 ; Двигаемся назад
-    
+
     mov ax, cx
     xor dx, dx
     mov bx, 10
     div bx                  ; AX = частное, DX = цифра
-    
+
     add dl, '0'             ; Преобразуем в символ
     mov [esi], dl           ; Сохраняем
-    
+
     mov cx, ax              ; Обновляем число
     cmp cx, 0
     jnz .digit_loop         ; Продолжаем если есть цифры
-    
+
     ; Копируем цифры в основной буфер
 .copy_digits:
     mov al, [esi]
@@ -207,23 +207,23 @@ print_signed:
     inc edi
     cmp al, 0               ; До нуль-терминатора
     jne .copy_digits
-    
+
     ; Вывод результата
     mov eax, 4              ; write
     mov ebx, 1				; stdout
     mov ecx, print_buf_sign ; то, куда
     mov edx, edi			; длина
-    sub edx, print_buf_sign 
+    sub edx, print_buf_sign
     dec edx                 ; Минус лишний нуль-терминатор
     int 0x80
-    
+
     ; Перевод строки
-    mov eax, 4           
+    mov eax, 4
     mov ebx, 1
     mov ecx, newline
     mov edx, 1
     int 0x80
-    
+
 	pop esi
     pop edx
     pop ecx

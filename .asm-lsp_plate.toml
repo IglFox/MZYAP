@@ -1,0 +1,34 @@
+version = "0.1"
+
+[assemblers]
+gas = true  # В лабораторной используется GAS (GNU Assembler) синтаксис
+nasm = true
+
+[instruction_sets]
+arm = true      # ARMv7-A (Cortex-A9)
+arm64 = false   # Cortex-A9 32-bit
+x86 = false
+x86_64 = true
+arm = false
+riscv = false
+
+
+[diagnostics]
+enabled = true
+default_diagnostics = true
+compiler = "arm-none-eabi-gcc"  # или "gcc", если используете системный
+
+# Специфические флаги для Cortex-A9
+[[project]]
+path = "."
+assembler = "gas"
+instruction_set = "arm"
+
+[project.opts]
+compiler = "arm-none-eabi-gcc"
+compile_flags_txt = [
+    "-x", "assembler-with-cpp",
+    "-mcpu=cortex-a9",
+    "-march=armv7-a",
+    "-Wall"
+]
