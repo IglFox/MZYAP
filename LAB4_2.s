@@ -1,0 +1,54 @@
+.text
+.global _start
+
+_start: 
+LDR R0, =0xFF200000
+MET: 
+MOVW R1, #0x0654
+MOVT R1, #0x793D
+STR R1, [R0, #0x20]
+MOVW R1, #0x007C
+STR R1, [R0, #0x30]
+
+MET1: 
+LDR R2, [R0, #0x50]
+TST R2, #8
+BNE PROG
+LDR R5, =0x0A000000
+
+DL:
+SUBS R5, R5, #1
+BNE DL
+B MET1
+
+PROG:
+MOV R6, #0
+STR R6, [R0, #0x20]
+STR R6, [R0, #0x30]
+LDR R4, [R0, #0x40]
+MOV R5, R4
+
+DL_1: 
+SUB R4, R4, #1
+LDR R3, =0x0A000000
+
+DL2: 
+SUBS R3, R3, #1
+BNE DL2
+
+CMP R4, #0
+BNE DL_1
+  
+MOVW R1, #0x1054
+MOVT R1, #0x0071
+STR R1, [R0, #0x20]
+MOV R1, R5
+STR R1, [R0]
+LDR R3, =0x30000000
+
+DL3: 
+SUBS R3, R3, #1
+BNE DL3
+STR R6, [R0]
+B MET
+
